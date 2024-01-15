@@ -1,0 +1,5 @@
+.env
+myLog.log
+node_modules
+.vscode
+myLog.log
