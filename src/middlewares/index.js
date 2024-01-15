@@ -1,3 +1,1 @@
-module.exports = {
-    AirplaneMiddleware: require("./airplane.middleware"),
-};
+module.exports = {};
