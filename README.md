@@ -1,5 +1,5 @@
 
-# Basic Node Setup
+# Ecommerce API Gateway
 
 If you want to setup basic node project then follow the steps as given below:
 
