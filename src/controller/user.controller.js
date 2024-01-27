@@ -44,6 +44,7 @@ async function signIn(req, res) {
 
 async function authorization(req, res) {
     try {
+        console.log(req.body);
         const response = await userServices.authorization({
             token: req.body.token,
         });
@@ -53,7 +54,7 @@ async function authorization(req, res) {
     } catch (error) {
         console.log(error);
         return res.status(StatusCodes.BAD_REQUEST).json({
-            msg: error,
+            valid: false,
         });
     }
 }
