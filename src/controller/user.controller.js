@@ -31,14 +31,22 @@ async function signIn(req, res) {
             email: req.body.email,
             password: req.body.password,
         });
-        return res.status(StatusCodes.OK).json({
-            msg: response,
-        });
+        // return res.status(StatusCodes.OK).json({
+        //     msg: response,
+        // });
+
+        SuccessResponse.data = response;
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(error);
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            msg: error,
-        });
+        console.log(JSON.stringify(error));
+
+        ErrorResponse.error = error;
+
+        // return res.status(StatusCodes.BAD_REQUEST).json({
+        //     msg: error,
+        // });
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
     }
 }
 

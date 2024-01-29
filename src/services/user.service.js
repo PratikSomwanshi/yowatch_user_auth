@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const { UserRepository } = require("../repository");
+const AppError = require("../utils/error/AppError");
 
 const userRepository = new UserRepository();
 
@@ -36,7 +37,7 @@ async function signIn(data) {
         return res;
     } catch (error) {
         console.log(error);
-        throw error;
+        throw new AppError(error.message, error.statusCode);
     }
 }
 

@@ -5,7 +5,6 @@ var cors = require("cors");
 const { ServerConfig } = require("./config");
 const apiRoutes = require("./routes");
 const connectDB = require("./config/mongoDB.config");
-const { User } = require("./models");
 
 const app = express();
 
