@@ -54,8 +54,30 @@ async function authorization(data) {
     }
 }
 
+async function updateUserCart(data) {
+    try {
+        const response = await userRepository.update(data);
+        return response;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+async function deleteUserCart(data) {
+    try {
+        const response = await userRepository.delete(data);
+        return response;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
     createUser,
     signIn,
     authorization,
+    updateUserCart,
+    deleteUserCart,
 };

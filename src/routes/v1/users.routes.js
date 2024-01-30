@@ -9,4 +9,8 @@ router.post("/signin", UserMiddleware.signInMiddleware, userController.signIn);
 
 router.post("/auth", userController.authorization);
 
+router.put("/cart", userController.updateUserCart);
+
+router.delete("/cart", userController.deleteUserCart);
+
 module.exports = router;

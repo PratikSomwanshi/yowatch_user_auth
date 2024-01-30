@@ -11,6 +11,7 @@ async function createUser(req, res) {
 
         SuccessResponse.data = {
             email: response.email,
+            cart: response.cart,
         };
         SuccessResponse.message = "successfully created the user";
 
@@ -50,6 +51,56 @@ async function signIn(req, res) {
     }
 }
 
+async function updateUserCart(req, res) {
+    try {
+        const response = await userServices.updateUserCart({
+            email: req.body.email,
+            data: req.body.productId,
+        });
+
+        SuccessResponse.data = {
+            email: response.email,
+            cart: response.cart,
+        };
+        // SuccessResponse.data = response;
+        SuccessResponse.message = "successfully created the user";
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log(error);
+
+        ErrorResponse.message = error.message;
+        ErrorResponse.error = error;
+
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
+async function deleteUserCart(req, res) {
+    try {
+        const response = await userServices.deleteUserCart({
+            email: req.body.email,
+            index: req.body.index,
+        });
+
+        SuccessResponse.data = {
+            email: response.email,
+            cart: response.cart,
+        };
+        // SuccessResponse.data = response;
+        SuccessResponse.message = "successfully created the user";
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log(error);
+
+        ErrorResponse.message = error.message;
+        ErrorResponse.error = error;
+
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
 async function authorization(req, res) {
     try {
         console.log(req.body);
@@ -67,4 +118,10 @@ async function authorization(req, res) {
     }
 }
 
-module.exports = { createUser, signIn, authorization };
+module.exports = {
+    createUser,
+    signIn,
+    authorization,
+    updateUserCart,
+    deleteUserCart,
+};
