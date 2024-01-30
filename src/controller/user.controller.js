@@ -101,6 +101,29 @@ async function deleteUserCart(req, res) {
     }
 }
 
+async function getCart(req, res) {
+    try {
+        const response = await userServices.getCart({
+            email: req.body.email,
+        });
+
+        // SuccessResponse.data = {
+        //     email: response.email,
+        //     cart: response.cart,
+        // };
+        SuccessResponse.data = response;
+        SuccessResponse.message = "successfully created the user";
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log(error);
+
+        ErrorResponse.error = error;
+
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
 async function authorization(req, res) {
     try {
         console.log(req.body);
@@ -124,4 +147,5 @@ module.exports = {
     authorization,
     updateUserCart,
     deleteUserCart,
+    getCart,
 };

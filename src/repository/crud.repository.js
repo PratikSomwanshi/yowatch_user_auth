@@ -15,6 +15,10 @@ class CrudRepository {
     async update(data) {
         const user = await this.model.findOne({ email: data.email });
 
+        if (!user) {
+            throw new AppError("user not defined", StatusCodes.BAD_REQUEST);
+        }
+
         if (user.cart.length == 5) {
             throw new AppError("cart is full", StatusCodes.BAD_REQUEST);
         }
@@ -62,6 +66,12 @@ class CrudRepository {
             }
         );
         return response;
+    }
+
+    async getCart({ email }) {
+        console.log(email);
+        const response = await this.model.findOne({ email });
+        return response.cart;
     }
 }
 

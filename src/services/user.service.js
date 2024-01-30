@@ -74,10 +74,21 @@ async function deleteUserCart(data) {
     }
 }
 
+async function getCart(data) {
+    try {
+        const response = await userRepository.getCart(data);
+        return response;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
     createUser,
     signIn,
     authorization,
     updateUserCart,
     deleteUserCart,
+    getCart,
 };
