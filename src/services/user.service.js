@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const moment = require("moment");
+const { OTP } = require("../models");
 
 const { UserRepository } = require("../repository");
 const AppError = require("../utils/error/AppError");
@@ -10,7 +13,6 @@ async function createUser(data) {
         const response = await userRepository.create(data);
         return response;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -36,7 +38,6 @@ async function signIn(data) {
 
         return res;
     } catch (error) {
-        console.log(error);
         throw new AppError(error.message, error.statusCode);
     }
 }
@@ -49,7 +50,6 @@ async function authorization(data) {
 
         return valid;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -59,7 +59,6 @@ async function updateUserCart(data) {
         const response = await userRepository.update(data);
         return response;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -69,7 +68,6 @@ async function deleteUserCart(data) {
         const response = await userRepository.delete(data);
         return response;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -79,8 +77,46 @@ async function getCart(data) {
         const response = await userRepository.getCart(data);
         return response;
     } catch (error) {
-        console.log(error);
         throw error;
+    }
+}
+
+async function sendOtp({ email }) {
+    try {
+        const otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+        });
+
+        await userRepository.otpMail(otp, email);
+    } catch (error) {
+        //
+        throw new AppError(error.explanation, error.statusCode);
+    }
+}
+
+async function otpMailVerify({ otp, email }) {
+    try {
+        const response = await userRepository.otpMailVerify(otp, email)
+
+        return response;
+    } catch (error) {
+        throw new AppError(error.explanation, error.statusCode);
+    }
+}
+
+async function deleteOldOtp() {
+    const five = new Date(moment().subtract("15", "minute"));
+
+    try {
+        await OTP.deleteMany({
+            updatedAt: {
+                $lt: five,
+            },
+        });
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -91,4 +127,7 @@ module.exports = {
     updateUserCart,
     deleteUserCart,
     getCart,
+    sendOtp,
+    deleteOldOtp,
+    otpMailVerify
 };

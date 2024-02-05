@@ -5,6 +5,7 @@ var cors = require("cors");
 const { ServerConfig } = require("./config");
 const apiRoutes = require("./routes");
 const connectDB = require("./config/mongoDB.config");
+const { scheduleCron } = require("./utils/cron/deleteOtp.cron");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiRoutes);
 
 app.listen(ServerConfig.PORT, async () => {
-    console.log(`server running on port ${ServerConfig.PORT}`);
+    console.log(`running on port ${ServerConfig.PORT}`);
     await connectDB();
+    scheduleCron();
 });

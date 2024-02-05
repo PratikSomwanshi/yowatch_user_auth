@@ -17,8 +17,6 @@ async function createUser(req, res) {
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(error);
-
         ErrorResponse.message = error.message;
         ErrorResponse.error = error;
 
@@ -40,8 +38,6 @@ async function signIn(req, res) {
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(JSON.stringify(error));
-
         ErrorResponse.error = error;
 
         // return res.status(StatusCodes.BAD_REQUEST).json({
@@ -67,8 +63,6 @@ async function updateUserCart(req, res) {
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(error);
-
         ErrorResponse.message = error.message;
         ErrorResponse.error = error;
 
@@ -92,8 +86,6 @@ async function deleteUserCart(req, res) {
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(error);
-
         ErrorResponse.message = error.message;
         ErrorResponse.error = error;
 
@@ -116,8 +108,6 @@ async function getCart(req, res) {
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
-        console.log(error);
-
         ErrorResponse.error = error;
 
         return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
@@ -126,7 +116,6 @@ async function getCart(req, res) {
 
 async function authorization(req, res) {
     try {
-        console.log(req.body);
         const response = await userServices.authorization({
             token: req.body.token,
         });
@@ -134,10 +123,39 @@ async function authorization(req, res) {
             valid: true,
         });
     } catch (error) {
-        console.log(error);
         return res.status(StatusCodes.BAD_REQUEST).json({
             valid: false,
         });
+    }
+}
+
+async function otpSend(req, res) {
+    try {
+        await userServices.sendOtp({
+            email: req.body.email,
+        });
+
+        SuccessResponse.data = "Successfully sended the OTP";
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
+async function otpMailVerify(req, res) {
+    try {
+        const response = await userServices.otpMailVerify({
+            otp: req.body.otp,
+            email: req.body.email,
+        });
+        SuccessResponse.data = response;
+
+        return res.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
     }
 }
 
@@ -148,4 +166,6 @@ module.exports = {
     updateUserCart,
     deleteUserCart,
     getCart,
+    otpSend,
+    otpMailVerify,
 };

@@ -23,7 +23,7 @@ class CrudRepository {
             throw new AppError("cart is full", StatusCodes.BAD_REQUEST);
         }
 
-        // console.log(data.data);
+        //
         let currentData = [];
         if (user.cart.length >= 1) {
             const arr = user.cart.toString();
@@ -69,7 +69,6 @@ class CrudRepository {
     }
 
     async getCart({ email }) {
-        console.log(email);
         const response = await this.model.findOne({ email });
         return response.cart;
     }
