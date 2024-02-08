@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const moment = require("moment");
-const { OTP } = require("../models");
+const { OTP, User } = require("../models");
+const { StatusCodes } = require("http-status-codes");
 
 const { UserRepository } = require("../repository");
 const AppError = require("../utils/error/AppError");
@@ -72,12 +73,35 @@ async function deleteUserCart(data) {
     }
 }
 
-async function getCart(data) {
+async function getCart({ email }) {
     try {
-        const response = await userRepository.getCart(data);
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw new AppError("User not found", StatusCodes.BAD_REQUEST);
+        }
+
+        const response = await User.aggregate([
+            {
+                $match: {
+                    email,
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "cart",
+                    foreignField: "_id",
+                    as: "cart_data",
+                },
+            },
+        ]);
         return response;
     } catch (error) {
-        throw error;
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw new AppError(error, StatusCodes.BAD_REQUEST);
     }
 }
 
@@ -98,7 +122,7 @@ async function sendOtp({ email }) {
 
 async function otpMailVerify({ otp, email }) {
     try {
-        const response = await userRepository.otpMailVerify(otp, email)
+        const response = await userRepository.otpMailVerify(otp, email);
 
         return response;
     } catch (error) {
@@ -129,5 +153,5 @@ module.exports = {
     getCart,
     sendOtp,
     deleteOldOtp,
-    otpMailVerify
+    otpMailVerify,
 };

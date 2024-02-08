@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "Please provide a password"],
     },
     cart: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
     },
 });
 

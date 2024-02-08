@@ -54,8 +54,13 @@ class CrudRepository {
             throw new AppError("cart is empty", StatusCodes.BAD_REQUEST);
         }
 
-        const currentData = user.cart;
-        currentData.splice(data.index, 1);
+        // const currentData = user.cart;
+        // currentData.splice(data.index, 1);
+
+        const currentData = user.cart.filter(
+            (item) => item.toString() !== data.id
+        );
+        console.log(currentData);
 
         const response = await this.model.findOneAndUpdate(
             {

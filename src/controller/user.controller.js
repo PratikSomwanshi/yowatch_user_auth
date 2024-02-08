@@ -74,7 +74,7 @@ async function deleteUserCart(req, res) {
     try {
         const response = await userServices.deleteUserCart({
             email: req.body.email,
-            index: req.body.index,
+            id: req.body.id,
         });
 
         SuccessResponse.data = {
@@ -104,7 +104,7 @@ async function getCart(req, res) {
         //     cart: response.cart,
         // };
         SuccessResponse.data = response;
-        SuccessResponse.message = "successfully created the user";
+        SuccessResponse.message = "successfully fetch the user";
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
