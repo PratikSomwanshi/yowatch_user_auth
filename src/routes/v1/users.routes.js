@@ -21,7 +21,7 @@ router.delete(
 
 router.post("/cart", CartMiddleware.checkEmail, userController.getCart);
 
-router.post("/mail", userController.otpSend);
+router.post("/mail", CartMiddleware.checkEmail, userController.otpSend);
 
 router.post("/mail/verify", userController.otpMailVerify);
 

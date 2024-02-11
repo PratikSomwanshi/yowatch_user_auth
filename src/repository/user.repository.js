@@ -29,24 +29,42 @@ class UserRepository extends CrudRepository {
         }
     }
 
+    nodeMail(email, otp) {
+        return mailSender.sendMail({
+            from: ServerConfig.EMAIL,
+            to: email,
+            subject: "OTP",
+            text: `Your OTP is ${otp}`,
+        });
+    }
+
     async otpMail(otp, email) {
         try {
             const otpEmail = await OTP.findOne({ email });
 
             let response;
+            if (otpEmail && otpEmail.otpSendCount >= 3) {
+                throw new AppError(
+                    "Max OTP retry, Retry after 15 min",
+                    StatusCodes.BAD_REQUEST
+                );
+            }
+
+            try {
+                await this.nodeMail(email, otp);
+            } catch (error) {
+                throw new AppError(
+                    "Failed to send the mail",
+                    StatusCodes.BAD_REQUEST
+                );
+            }
+
             if (!otpEmail) {
                 response = await OTP.create({
                     email,
                     otp,
                 });
             } else {
-                if (otpEmail.otpSendCount >= 3) {
-                    throw new AppError(
-                        "Max OTP retry, Retry after 15 min",
-                        StatusCodes.BAD_REQUEST
-                    );
-                }
-
                 response = await OTP.findOneAndUpdate(
                     {
                         email,
@@ -58,12 +76,6 @@ class UserRepository extends CrudRepository {
                 );
             }
 
-            mailSender.sendMail({
-                from: ServerConfig.EMAIL,
-                to: email,
-                subject: "OTP",
-                text: `Your OTP is ${otp}`,
-            });
             return response;
         } catch (error) {
             if (error instanceof AppError) {
@@ -79,8 +91,11 @@ class UserRepository extends CrudRepository {
             const otpEmail = await OTP.findOne({ email });
 
             if (!otpEmail)
+                throw new AppError("No otp found", StatusCodes.BAD_REQUEST);
+
+            if (otpEmail.status == "verified")
                 throw new AppError(
-                    "Verification Failed",
+                    "Email Already Verified",
                     StatusCodes.BAD_REQUEST
                 );
 
@@ -94,7 +109,7 @@ class UserRepository extends CrudRepository {
                     }
                 );
 
-                return "verification successfully";
+                return await OTP.findOne({ email });
             } else {
                 throw new AppError(
                     "Verification Failed",

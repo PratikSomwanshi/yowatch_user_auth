@@ -113,7 +113,7 @@ async function sendOtp({ email }) {
             lowerCaseAlphabets: false,
         });
 
-        await userRepository.otpMail(otp, email);
+        return await userRepository.otpMail(otp, email);
     } catch (error) {
         //
         throw new AppError(error.explanation, error.statusCode);

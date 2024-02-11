@@ -136,6 +136,7 @@ async function otpSend(req, res) {
         });
 
         SuccessResponse.data = "Successfully sended the OTP";
+        // SuccessResponse.data = response.explanation.errno;
 
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
