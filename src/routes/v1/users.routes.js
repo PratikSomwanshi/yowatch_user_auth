@@ -11,16 +11,6 @@ router.post("/signin", UserMiddleware.signInMiddleware, userController.signIn);
 
 router.post("/auth", userController.authorization);
 
-router.put("/cart", CartMiddleware.checkEmail, userController.updateUserCart);
-
-router.delete(
-    "/cart",
-    CartMiddleware.checkEmail,
-    userController.deleteUserCart
-);
-
-router.post("/cart", CartMiddleware.checkEmail, userController.getCart);
-
 router.post("/mail", CartMiddleware.checkEmail, userController.otpSend);
 
 router.post("/mail/verify", userController.otpMailVerify);

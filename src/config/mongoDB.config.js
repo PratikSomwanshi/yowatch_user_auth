@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const serverConfig = require("./server.config");
 
 async function connectDB() {
     try {
-        await mongoose.connect("mongodb://localhost:27017/ecommerce_backend");
+        await mongoose.connect(serverConfig.MONGO_URL);
     } catch (error) {
         throw error;
     }

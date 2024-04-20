@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const CrudRepository = require("./crud.repository");
 const { User, OTP } = require("../models");
 const mailSender = require("../config/email.config");
-const { ServerConfig } = require("../config");
+const { ServerConfig, resend } = require("../config");
 const AppError = require("../utils/error/AppError");
 
 class UserRepository extends CrudRepository {
@@ -29,14 +29,14 @@ class UserRepository extends CrudRepository {
         }
     }
 
-    nodeMail(email, otp) {
-        return mailSender.sendMail({
-            from: ServerConfig.EMAIL,
-            to: email,
-            subject: "OTP",
-            text: `Your OTP is ${otp}`,
-        });
-    }
+    // nodeMail(email, otp) {
+    //     return mailSender.sendMail({
+    //         from: ServerConfig.EMAIL,
+    //         to: email,
+    //         subject: "OTP",
+    //         text: `Your OTP is ${otp}`,
+    //     });
+    // }
 
     async otpMail(otp, email) {
         try {
@@ -50,13 +50,15 @@ class UserRepository extends CrudRepository {
                 );
             }
 
-            try {
-                await this.nodeMail(email, otp);
-            } catch (error) {
-                throw new AppError(
-                    "Failed to send the mail",
-                    StatusCodes.BAD_REQUEST
-                );
+            const { data, error } = await resend.emails.send({
+                from: "onboarding@resend.dev",
+                to: [email],
+                subject: "YoWatch OTP",
+                html: `<p>Your OTP is <strong>${otp}</strong>!</p>`,
+            });
+
+            if (error) {
+                throw new AppError(error, StatusCodes.BAD_REQUEST);
             }
 
             if (!otpEmail) {

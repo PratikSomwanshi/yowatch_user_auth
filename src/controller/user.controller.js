@@ -1,6 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const { userServices } = require("../services");
 const { ErrorResponse, SuccessResponse } = require("../utils/common");
+const moment = require("moment/moment");
+const { OTP } = require("../models");
 
 async function createUser(req, res) {
     try {
@@ -15,6 +17,13 @@ async function createUser(req, res) {
         };
         SuccessResponse.message = "successfully created the user";
 
+        try {
+            await OTP.findOneAndDelete({
+                email: req.body.email,
+            });
+        } catch (error) {
+            console.log(error);
+        }
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
         ErrorResponse.message = error.message;
@@ -36,6 +45,14 @@ async function signIn(req, res) {
 
         SuccessResponse.data = response;
 
+        try {
+            await OTP.findOneAndDelete({
+                email: req.body.email,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
         ErrorResponse.error = error;
@@ -47,73 +64,6 @@ async function signIn(req, res) {
     }
 }
 
-async function updateUserCart(req, res) {
-    try {
-        const response = await userServices.updateUserCart({
-            email: req.body.email,
-            data: req.body.productId,
-        });
-
-        SuccessResponse.data = {
-            email: response.email,
-            cart: response.cart,
-        };
-        // SuccessResponse.data = response;
-        SuccessResponse.message = "successfully created the user";
-
-        return res.status(StatusCodes.OK).json(SuccessResponse);
-    } catch (error) {
-        ErrorResponse.message = error.message;
-        ErrorResponse.error = error;
-
-        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
-    }
-}
-
-async function deleteUserCart(req, res) {
-    try {
-        const response = await userServices.deleteUserCart({
-            email: req.body.email,
-            id: req.body.id,
-        });
-
-        SuccessResponse.data = {
-            email: response.email,
-            cart: response.cart,
-        };
-        // SuccessResponse.data = response;
-        SuccessResponse.message = "successfully created the user";
-
-        return res.status(StatusCodes.OK).json(SuccessResponse);
-    } catch (error) {
-        ErrorResponse.message = error.message;
-        ErrorResponse.error = error;
-
-        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
-    }
-}
-
-async function getCart(req, res) {
-    try {
-        const response = await userServices.getCart({
-            email: req.body.email,
-        });
-
-        // SuccessResponse.data = {
-        //     email: response.email,
-        //     cart: response.cart,
-        // };
-        SuccessResponse.data = response;
-        SuccessResponse.message = "successfully fetch the user";
-
-        return res.status(StatusCodes.OK).json(SuccessResponse);
-    } catch (error) {
-        ErrorResponse.error = error;
-
-        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
-    }
-}
-
 async function authorization(req, res) {
     try {
         const response = await userServices.authorization({
@@ -121,6 +71,9 @@ async function authorization(req, res) {
         });
         return res.status(StatusCodes.OK).json({
             valid: true,
+            init: moment(response.iat),
+            now: moment(),
+            expire: moment(response.exp),
         });
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -153,6 +106,14 @@ async function otpMailVerify(req, res) {
         });
         SuccessResponse.data = response;
 
+        try {
+            await OTP.findOneAndDelete({
+                email: req.body.email,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
         return res.status(StatusCodes.OK).json(SuccessResponse);
     } catch (error) {
         ErrorResponse.error = error;
@@ -164,9 +125,6 @@ module.exports = {
     createUser,
     signIn,
     authorization,
-    updateUserCart,
-    deleteUserCart,
-    getCart,
     otpSend,
     otpMailVerify,
 };
