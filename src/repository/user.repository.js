@@ -6,6 +6,18 @@ const { User, OTP } = require("../models");
 const mailSender = require("../config/email.config");
 const { ServerConfig, resend } = require("../config");
 const AppError = require("../utils/error/AppError");
+const nodemailer = require("nodemailer");
+const serverConfig = require("../config/server.config");
+
+const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+        user: "adrian21@ethereal.email",
+        pass: "SyRNz3APB2J4Yz7eAH",
+    },
+});
 
 class UserRepository extends CrudRepository {
     constructor() {
@@ -29,14 +41,14 @@ class UserRepository extends CrudRepository {
         }
     }
 
-    // nodeMail(email, otp) {
-    //     return mailSender.sendMail({
-    //         from: ServerConfig.EMAIL,
-    //         to: email,
-    //         subject: "OTP",
-    //         text: `Your OTP is ${otp}`,
-    //     });
-    // }
+    nodeMail(email, otp) {
+        return mailSender.sendMail({
+            from: ServerConfig.EMAIL,
+            to: email,
+            subject: "OTP",
+            text: `Your OTP is ${otp}`,
+        });
+    }
 
     async otpMail(otp, email) {
         try {
@@ -50,15 +62,13 @@ class UserRepository extends CrudRepository {
                 );
             }
 
-            const { data, error } = await resend.emails.send({
-                from: "onboarding@resend.dev",
-                to: [email],
-                subject: "YoWatch OTP",
-                html: `<p>Your OTP is <strong>${otp}</strong>!</p>`,
-            });
-
-            if (error) {
-                throw new AppError(error, StatusCodes.BAD_REQUEST);
+            try {
+                await this.nodeMail(email, otp);
+            } catch (error) {
+                throw new AppError(
+                    "Failed to send the mail",
+                    StatusCodes.BAD_REQUEST
+                );
             }
 
             if (!otpEmail) {

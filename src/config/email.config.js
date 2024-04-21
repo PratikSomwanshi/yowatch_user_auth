@@ -1,13 +1,13 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 const serverConfig = require("./server.config");
 
-const resend = new Resend(serverConfig.RESEND_API);
+const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    auth: {
+        user: serverConfig.EMAIL,
+        pass: serverConfig.EMAIL_PASSWORD,
+    },
+});
 
-// resend.emails.send({
-//   from: 'onboarding@resend.dev',
-//   to: 'bd8830759797@gmail.com',
-//   subject: 'Hello World',
-//   html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-// });
-
-module.exports = resend;
+module.exports = transporter;
