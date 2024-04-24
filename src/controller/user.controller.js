@@ -9,11 +9,12 @@ async function createUser(req, res) {
         const response = await userServices.createUser({
             email: req.body.email,
             password: req.body.password,
+            userName: req.body.userName,
         });
 
         SuccessResponse.data = {
             email: response.email,
-            cart: response.cart,
+            userName: response.userName,
         };
         SuccessResponse.message = "successfully created the user";
 

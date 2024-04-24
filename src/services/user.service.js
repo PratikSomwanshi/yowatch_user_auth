@@ -35,6 +35,7 @@ async function signIn(data) {
 
         let res = {};
         res.email = response.email;
+        res.userName = response.userName;
         res.token = token;
 
         return res;
